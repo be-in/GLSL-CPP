@@ -312,20 +312,26 @@ namespace glsl {
   GLSL_INLINE vec4 operator*(const float& a, const vec4& b) { return vec4(a * b.x, a * b.y, a * b.z, a * b.w); }
   GLSL_INLINE vec4 operator/(const float& a, const vec4& b) { return vec4(a / b.x, a / b.y, a / b.z, a / b.w); }
 
-	float sqrt(float a);
-	double sqrt(double a);
+	GLSL_INLINE float sqrt(float a);
+	GLSL_INLINE double sqrt(double a);
 
-	float floor(float a);
+	GLSL_INLINE float floor(float a);
 	GLSL_INLINE vec2 floor(vec2 a) { return vec2(floor(a.x), floor(a.y)); }
 	GLSL_INLINE vec3 floor(vec3 a) { return vec3(floor(a.x), floor(a.y), floor(a.z)); }
 	GLSL_INLINE vec4 floor(vec4 a) { return vec4(floor(a.x), floor(a.y), floor(a.z), floor(a.w)); }
 
-	double floor(double a);
+	GLSL_INLINE double floor(double a);
+	GLSL_INLINE dvec2 floor(dvec2 a) { return dvec2(floor(a.x), floor(a.y)); }
 
 	GLSL_INLINE float fract(float a) { return a - floor(a); }
 	GLSL_INLINE vec2 fract(vec2 a) { return vec2(fract(a.x), fract(a.y)); }
 	GLSL_INLINE vec3 fract(vec3 a) { return vec3(fract(a.x), fract(a.y), fract(a.z)); }
 	GLSL_INLINE vec4 fract(vec4 a) { return vec4(fract(a.x), fract(a.y), fract(a.z), fract(a.w)); }
+
+	GLSL_INLINE double fract(double a) { return a - floor(a); }
+	GLSL_INLINE dvec2 fract(dvec2 a) { return dvec2(fract(a.x), fract(a.y)); }
+	GLSL_INLINE dvec3 fract(dvec3 a) { return dvec3(fract(a.x), fract(a.y), fract(a.z)); }
+	GLSL_INLINE dvec4 fract(dvec4 a) { return dvec4(fract(a.x), fract(a.y), fract(a.z), fract(a.w)); }
 
 	GLSL_INLINE int min(int a, int b) { return a < b ? a : b; }
 	GLSL_INLINE float min(float a, float b) { return a < b ? a : b; }
@@ -350,6 +356,7 @@ namespace glsl {
   GLSL_INLINE vec4 clamp(vec4 a, vec4 b, vec4 c) { return vec4(clamp(a.x, b.x, c.x), clamp(a.y, b.y, c.y), clamp(a.z, b.z, c.z), clamp(a.w, b.w, c.w)); }
 
   GLSL_INLINE double clamp(double a, double b, double c) { return a < b ? b : (a > c ? c : a); }
+  GLSL_INLINE dvec3 clamp(dvec3 a, dvec3 b, dvec3 c) { return dvec3(clamp(a.x, b.x, c.x), clamp(a.y, b.y, c.y), clamp(a.z, b.z, c.z)); }
 
   GLSL_INLINE int mix(int a, int b, float c) { return (a)*(1.0f-c)+b*c; }
   GLSL_INLINE float mix(float a, float b, float c) { return (a)*(1.0f-c)+b*c; }
@@ -412,6 +419,13 @@ namespace glsl {
 		IEE754DOUBLE varIEE;
 	};
 
+	GLSL_INLINE int abs(int a) { return a<0 ? -a : a; }
+  GLSL_INLINE float abs(float a) { conv4b r; r.valfloat = a; r.valuint &= 0x7FFFFFFF; return r.valfloat; }
+  GLSL_INLINE vec3 abs(vec3 a) { return vec3(abs(a.x), abs(a.y), abs(a.z)); }
+
+  GLSL_INLINE double abs(double a) { conv8b r; r.valdouble = a; r.valulong &= 0x7FFFFFFFFFFFFFFF; return r.valdouble; }
+  GLSL_INLINE dvec3 abs(dvec3 a) { return dvec3(abs(a.x), abs(a.y), abs(a.z)); }
+
 	GLSL_INLINE float sqrt(float a)
 	{
 		if (a==0) return 0;
@@ -443,7 +457,7 @@ namespace glsl {
 	{
 		conv4b rd = *(conv4b*)&_a;
 		if (rd.valint == 0) return 0;
-		return ((rd.varIEE.mant | 0x00800000) >> (127 + 23 - (int)rd.varIEE.exp))*(1 - (((int)rd.varIEE.sign) << 1));
+		return ((rd.varIEE.mant | 0x00800000) >> clamp(127 + 23 - (int)rd.varIEE.exp,-31,31))*(1 - (((int)rd.varIEE.sign)<<1)) - (int)rd.varIEE.sign;
 	}
 
 	GLSL_INLINE double floor(double _a)
@@ -452,7 +466,7 @@ namespace glsl {
 		if (rd.vallong == 0) return 0;
 		int val0 = (1023 + 52 - (int)rd.varIEE.exp);
 		if (val0 > 128) val0 = 128;
-		return ((rd.varIEE.mant | 0x0010000000000000) >> val0)*(1 - (((int)rd.varIEE.sign) << 1));
+		return (long long)((rd.varIEE.mant | 0x0010000000000000) >> clamp(val0,-63,63))*(1 - (((int)rd.varIEE.sign)<<1)) - (long long)rd.varIEE.sign;
 	}
 }
 
