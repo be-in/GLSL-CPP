@@ -17,6 +17,13 @@
 
 #endif
 
+#define MAX_SINE_ITER 8
+
+#define GLSL_PI_2F 6.283185307179586476925286766559f
+#define GLSL_PI_2D 6.283185307179586476925286766559
+#define GLSL_IPI_2F 0.15915494309189533576888376337251f
+#define GLSL_IPI_2D 0.15915494309189533576888376337251
+
 namespace glsl {
 
   struct ivec2;
@@ -333,6 +340,16 @@ namespace glsl {
 	GLSL_INLINE dvec3 fract(dvec3 a) { return dvec3(fract(a.x), fract(a.y), fract(a.z)); }
 	GLSL_INLINE dvec4 fract(dvec4 a) { return dvec4(fract(a.x), fract(a.y), fract(a.z), fract(a.w)); }
 
+	GLSL_INLINE float sin(float a);
+	GLSL_INLINE vec2 sin(vec2 a) { return vec2(sin(a.x),sin(a.y)); }
+	GLSL_INLINE vec3 sin(vec3 a) { return vec3(sin(a.x),sin(a.y),sin(a.z)); }
+	GLSL_INLINE vec4 sin(vec4 a) { return vec4(sin(a.x),sin(a.y),sin(a.z),sin(a.w)); }
+
+	GLSL_INLINE float cos(float a);
+	GLSL_INLINE vec2 cos(vec2 a) { return vec2(cos(a.x),cos(a.y)); }
+	GLSL_INLINE vec3 cos(vec3 a) { return vec3(cos(a.x),cos(a.y),cos(a.z)); }
+	GLSL_INLINE vec4 cos(vec4 a) { return vec4(cos(a.x),cos(a.y),cos(a.z),cos(a.w)); }
+
 	GLSL_INLINE int min(int a, int b) { return a < b ? a : b; }
 	GLSL_INLINE float min(float a, float b) { return a < b ? a : b; }
 	GLSL_INLINE vec2 min(vec2 a, vec2 b) { return vec2(a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y); }
@@ -421,7 +438,9 @@ namespace glsl {
 
 	GLSL_INLINE int abs(int a) { return a<0 ? -a : a; }
   GLSL_INLINE float abs(float a) { conv4b r; r.valfloat = a; r.valuint &= 0x7FFFFFFF; return r.valfloat; }
+  GLSL_INLINE vec2 abs(vec2 a) { return vec2(abs(a.x), abs(a.y)); }
   GLSL_INLINE vec3 abs(vec3 a) { return vec3(abs(a.x), abs(a.y), abs(a.z)); }
+	GLSL_INLINE vec4 abs(vec4 a) { return vec4(abs(a.x), abs(a.y),abs(a.z), abs(a.w)); }
 
   GLSL_INLINE double abs(double a) { conv8b r; r.valdouble = a; r.valulong &= 0x7FFFFFFFFFFFFFFF; return r.valdouble; }
   GLSL_INLINE dvec3 abs(dvec3 a) { return dvec3(abs(a.x), abs(a.y), abs(a.z)); }
@@ -434,7 +453,6 @@ namespace glsl {
 		c.valfloat=a;
 		al.valuint=0x5f3504f3-(c.valuint>>1);
 		float g=al.valfloat;
-		//float c05=0.5f;
 		float mr=g*(3.0f-c.valfloat*g*g);
 		return 1.0/mr+a*mr*0.25;
 	}
@@ -465,8 +483,63 @@ namespace glsl {
 		conv8b rd = *(conv8b*)&_a;
 		if (rd.vallong == 0) return 0;
 		int val0 = (1023 + 52 - (int)rd.varIEE.exp);
-		if (val0 > 128) val0 = 128;
 		return (long long)((rd.varIEE.mant | 0x0010000000000000) >> clamp(val0,-63,63))*(1 - (((int)rd.varIEE.sign)<<1)) - (long long)rd.varIEE.sign;
+	}
+
+	const float fastsindividef[]={0.5f,1.0f/6.0f,1.0f/24.0f,1.0f/120.0f,1.0f/720.0f,1.0f/5040.0f,1.0f/40320.0f,
+			1.0f/362880.0f,1.0f/3628800.0f,1.0f/3.99168E7f,1.0f/4.790016E8f,1.0f/6.2270208E9f,1.0f/8.717828912E10f,1.0f/1.307674368E12f,
+			(float)4.7794773323873852974382074911175e-14,(float)2.8114572543455207631989455830103e-15,0,0,0,0};
+
+	GLSL_INLINE float sin(float _a)
+	{
+		_a = (fract(_a*GLSL_IPI_2F + 0.5f)-0.5f) *GLSL_PI_2F;
+		float b=_a;
+		float _s=b;
+		for (int i=0;i<MAX_SINE_ITER;i++) {
+			b=(float)((-1.0)*b*_a);
+			b*=_a;
+			_s+=(float)(b*fastsindividef[(i<<1)+1]);
+		}
+		return _s;
+	}
+
+	GLSL_INLINE float cos(float _a)
+	{
+		_a = (fract(_a*GLSL_IPI_2F + 0.5f)-0.5f) *GLSL_PI_2F;
+		float b=_a;
+		float _c=1.0f;
+		for (int i=0;i<MAX_SINE_ITER;i++) {
+			b=(float)((-1.0)*b*_a);
+			_c+=(float)(b*fastsindividef[(i<<1)]);
+			b*=_a;
+		}
+		return _c;
+	}
+
+	GLSL_INLINE double sin(double _a)
+	{
+		_a = (fract(_a*GLSL_IPI_2D + 0.5)-0.5) *GLSL_PI_2D;
+		double b=_a;
+		double _s=b;
+		for (int i=0;i<MAX_SINE_ITER;i++) {
+			b=(double)((-1.0)*b*_a);
+			b*=_a;
+			_s+=(double)(b*fastsindividef[(i<<1)+1]);
+		}
+		return _s;
+	}
+
+	GLSL_INLINE double cos(double _a)
+	{
+		_a = (fract(_a*GLSL_IPI_2D + 0.5)-0.5) *GLSL_PI_2D;
+		double b=_a;
+		double _c=1.0f;
+		for (int i=0;i<MAX_SINE_ITER;i++) {
+			b=(double)((-1.0)*b*_a);
+			_c+=(double)(b*fastsindividef[(i<<1)]);
+			b*=_a;
+		}
+		return _c;
 	}
 }
 
