@@ -19,6 +19,8 @@
 
 #define MAX_SINE_ITER 8
 
+#define GLSL_PIF 3.1415926535897932384626433832795f
+#define GLSL_PID 3.1415926535897932384626433832795
 #define GLSL_PI_2F 6.283185307179586476925286766559f
 #define GLSL_PI_2D 6.283185307179586476925286766559
 #define GLSL_IPI_2F 0.15915494309189533576888376337251f
@@ -490,6 +492,11 @@ namespace glsl {
 	GLSL_INLINE vec3 cos(vec3 a) { return vec3(cos(a.x),cos(a.y),cos(a.z)); }
 	GLSL_INLINE vec4 cos(vec4 a) { return vec4(cos(a.x),cos(a.y),cos(a.z),cos(a.w)); }
 
+	GLSL_INLINE float atan(float y, float x);
+	GLSL_INLINE vec2 atan(vec2 y, vec2 x) { return vec2(atan(y.x, x.x),atan(y.y, x.y)); }
+	GLSL_INLINE vec3 atan(vec3 y, vec3 x) { return vec3(atan(y.x, x.x),atan(y.y, x.y),atan(y.z, x.z)); }
+	GLSL_INLINE vec4 atan(vec4 y, vec4 x) { return vec4(atan(y.x, x.x),atan(y.y, x.y),atan(y.z, x.z),atan(y.w, x.w)); }
+
 	GLSL_INLINE int min(int a, int b) { return a < b ? a : b; }
 	GLSL_INLINE float min(float a, float b) { return a < b ? a : b; }
 	GLSL_INLINE vec2 min(vec2 a, vec2 b) { return vec2(a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y); }
@@ -692,6 +699,7 @@ namespace glsl {
 	const float fastsindividef[]={0.5f, 1.0f/6.0f,1.0f/24.0f, 1.0f/120.0f,1.0f/720.0f, 1.0f/5040.0f, 1.0f/40320.0f,
 			1.0f/362880.0f, 1.0f/3628800.0f, 1.0f/3.99168E7f, 1.0f/4.790016E8f, 1.0f/6.2270208E9f, 1.0f/8.717828912E10f, 1.0f/1.307674368E12f,
 			(float)4.7794773323873852974382074911175e-14,(float)2.8114572543455207631989455830103e-15,0,0,0,0};
+	const float fasttgdividef[]={1.0f/3,1.0f/5,1.0f/7,1.0f/9,1.0f/11,1.0f/13,1.0f/15,1.0f/17,1.0f/19,1.0f/21,1.0f/23,1.0f/25,1.0f/27,1.0f/29,1.0f/31,1.0f/33,1.0f/35};
 
 	GLSL_INLINE float sin(float _a)
 	{
@@ -743,6 +751,78 @@ namespace glsl {
 			_c+=(double)(b * fastsindividef[(i<<1)]);
 		}
 		return _c;
+	}
+
+	GLSL_INLINE float atan(float y, float x)
+	{
+		float _b;
+		vec2 ab=abs(vec2(x,y));
+		if (ab.y==ab.x) {
+			_b = 0.78539816339744830961566084581988f;
+		} else {
+			float b = min(ab.x,ab.y)/max(ab.x,ab.y);
+			if (b>0.4142135623730950488016887242097f) {
+				if (ab.y>ab.x) {
+					ab = ab*0.92387953251128675612818318939679f + vec2(-ab.y,ab.x)*0.3826834323650897717284599840304f;
+					b = ab.x/ab.y;
+				} else {
+					ab = ab*0.92387953251128675612818318939679f + vec2(ab.y,-ab.x)*0.3826834323650897717284599840304f;
+					b = ab.y/ab.x;
+				}
+				_b = b+0.39269908169872415480783042290994f;
+			} else _b = b;
+			float a = b*b;
+			float* fds = (float*)fasttgdividef;
+			float* fdse = (float*)fasttgdividef+8;
+			while (fds<fdse) {
+				b *= a; _b -= b*fds[0];
+				b *= a; _b += b*fds[1];
+				fds+=2;
+			}
+		}
+		if (y*x<0) _b = -_b;
+		float fs=0;
+		if (ab.y>ab.x) {
+			_b = -_b;
+			fs = GLSL_PIF * 0.5f;
+		} else if (x<0) fs = GLSL_PIF;
+		return _b + (y<0 ? -fs : fs);
+	}
+
+	GLSL_INLINE double atan(double y, double x)
+	{
+		double _b;
+		vec2 ab=abs(vec2(x,y));
+		if (ab.y==ab.x) {
+			_b = 0.78539816339744830961566084581988;
+		} else {
+			double b = min(ab.x,ab.y)/max(ab.x,ab.y);
+			if (b>0.4142135623730950488016887242097) {
+				if (ab.y>ab.x) {
+					ab = ab*0.92387953251128675612818318939679 + vec2(-ab.y,ab.x)*0.3826834323650897717284599840304;
+					b = ab.x/ab.y;
+				} else {
+					ab = ab*0.92387953251128675612818318939679 + vec2(ab.y,-ab.x)*0.3826834323650897717284599840304;
+					b = ab.y/ab.x;
+				}
+				_b = b+0.39269908169872415480783042290994;
+			} else _b = b;
+			double a = b*b;
+			float* fds = (float*)fasttgdividef;
+			float* fdse = (float*)fasttgdividef+8;
+			while (fds<fdse) {
+				b *= a; _b -= b*fds[0];
+				b *= a; _b += b*fds[1];
+				fds+=2;
+			}
+		}
+		if (y*x<0) _b = -_b;
+		double fs=0;
+		if (ab.y>ab.x) {
+			_b = -_b;
+			fs = GLSL_PID * 0.5;
+		} else if (x<0) fs = GLSL_PID;
+		return _b + (y<0 ? -fs : fs);
 	}
 }
 

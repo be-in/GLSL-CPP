@@ -1,6 +1,6 @@
 #include "glsl-cpp.h"
 #include "graph.h"
-#include <cmath>
+//#include <cmath>
 
 using namespace glsl;
 
@@ -11,7 +11,7 @@ using namespace glsl;
 vec2 NC0=vec2(1.0,136.0);
 vec3 NC1=vec3(1.0,136.0,31.0);
 
-inline vec2 getBL(vec3 pos) { return vec2(atan2(pos.x,pos.z),atan2(length(vec2(pos.x,pos.z)),pos.y))/3.1415f; }
+inline vec2 getBL(vec3 pos) { return vec2(atan(pos.x,pos.z),atan(length(vec2(pos.x,pos.z)),pos.y))/3.1415f; }
 
 vec2 sphereIntersect(vec3 ray,vec3 pos,float r)
 {
