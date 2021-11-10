@@ -13,15 +13,6 @@ vec3 NC1=vec3(1.0,136.0,31.0);
 
 inline vec2 getBL(vec3 pos) { return vec2(atan2(pos.x,pos.z),atan2(length(vec2(pos.x,pos.z)),pos.y))/3.1415f; }
 
-vec2 ortoSphereIntersect2D(vec2 ray,float r)
-{
-    float r2=r*r;
-    float t2=magnitude(ray);
-    if (t2>=r2) return vec2(-1.0, -1.0);
-    float d = sqrt(r2-t2);
-    return vec2(- d,d) + r;
-}
-
 vec2 sphereIntersect(vec3 ray,vec3 pos,float r)
 {
     float r2=r*r;
@@ -37,8 +28,6 @@ vec3 sphereNormal(vec3 pos, vec3 surface)
 {
     return normalize(surface-pos);
 }
-
-//vec2 getBL(vec3 pos) { return vec2(atan(pos.x,pos.z),atan(length(pos.xz()),pos.y))/3.1415f; }
 
 // Simple 2d interpolated noise for mercator projection, using local seed.
 float sphereNoise2Ds(vec2 bl,float scale,float seed)
@@ -88,15 +77,6 @@ float spherePerlinHalfds(vec2 bl,float scale,float force,float seed)
     +sphereNoise2Do(bl,2.0f*scale,force,seed)*0.25f+sphereNoise2Do(bl,scale,force,seed)*0.35f;
 }
 
-/*float spherePerlin(vec2 bl,float scale,float seed)
-{
-    return (sphereNoise2Ds(bl,512.0*scale,seed)*0.8+sphereNoise2Ds(bl,256.0*scale,seed)*0.8
-     +sphereNoise2Ds(bl,128.0*scale,seed)+sphereNoise2Ds(bl,64.0*scale,seed)
-     +sphereNoise2Ds(bl,32.0*scale,seed)+sphereNoise2Ds(bl,16.0*scale,seed)
-     +sphereNoise2Ds(bl,8.0*scale,seed)+sphereNoise2Ds(bl,4.0*scale,seed)
-     +sphereNoise2Ds(bl,2.0*scale,seed)*1.2+sphereNoise2Ds(bl,scale,seed)*1.2)*0.1;
-}*/
-
 float spherePerlin(vec2 bl,float scale,float seed)
 {
     return (sphereNoise2Ds(bl,128.0*scale,seed)+sphereNoise2Ds(bl,64.0*scale,seed)
@@ -143,8 +123,6 @@ float atmosphere(vec3 pos, vec3 atmosSurface, vec3 ray, vec3 lnorm, float planet
     acc = acc*pow(clamp(dot(lnorm,normalize(atmosSurface-pos)),0.0f,1.0f),0.4f);
     acc = acc*acc;
     acc = acc*acc;
-
-    //return clamp(acc*2.f,0.f,1.f);
     return acc;
 }
 
@@ -173,31 +151,6 @@ vec3 sphereTexture(vec3 realSurface, vec3 ray, vec3 snorm,vec3 lnorm,float time)
     vec3 bac = vec3(0.1f,0.2f,0.5f) * dot(col,vec3(1.f))*bal;
     return col*light+bac;
 }
-
-/*vec2 cloudTexture(vec3 realSurface, float time)
-{
-   vec3 w = wind3D(realSurface*1.f,1.5f);
-   w += wind3D(realSurface*2.f,1.5f)*0.2f;
-   w += wind3D(realSurface*6.f,1.5f)*0.1f;
-   vec2 t = time*vec2(0.2f,0.5f);
-   vec2 bld1 = getBL(normalize(realSurface-w*(1.4f+0.4f*fract(t.x))));
-   //vec2 bld2 = getBL(normalize(realSurface-w*(1.4f+0.4f*fract(t.x+0.5f))));
-   vec2 blc1 = getBL(normalize(realSurface-w*(1.4f+0.4f*fract(t.y))));
-   //vec2 blc2 = getBL(normalize(realSurface-w*(1.4f+0.4f*fract(t.y+0.5f))));
-
-   float d1 = spherePerlinHalf(bld1, 6.0f, 14.0f+floor(t.x)*0.1f);
-   //float d2 = spherePerlinHalf(bld2, 6.0f, 14.05f+floor(t.x+0.5f)*0.1f);
-
-   float c1 = spherePerlinHalf(blc1, 192.0f, 14.0f+floor(t.y)*2.0f);
-   //float c2 = spherePerlinHalf(blc2, 192.0f, 15.0f+floor(t.y+0.5f)*2.0f);
-   vec2 fdc = abs(0.5f-fract(t))*2.0f;
-   float d = d1;//mix(d1,d2,fdc.x);
-   float c = c1;//mix(c1,c2,fdc.y);
-
-   float f = clamp((d*d)*4.0f-c-0.5f,0.0f,1.0f);
-   f = 1.-f;
-   return vec2(1.-f*f,0);
-}*/
 
 vec2 cloudTexture(vec3 realSurface,float time)
 {
@@ -246,7 +199,6 @@ int _PlanetPixel(float x,float y)
         color = mix(color,mix(vec3(1.0,0.96,0.7),vec3(1.0,0.96,0.7),ap),ap);
     }
     if (dcloud.x>0.0) {
-        //vec3 sback = ray*dcloud.y;
         vec3 ssurface = ray*dcloud.x;
         vec3 snorm = sphereNormal(spos,ssurface);
         vec3 lsnorm = normalize(lpos - ssurface);
@@ -274,26 +226,6 @@ void PaintPlanet(int *buff, int w, int h)
             *c = _PlanetPixel((x-w*0.5)*iw*2.0f,y*ih*2.0f-1.0f);
             c++;
         }
-}
-
-void DrawOrtoSphere(float xp, float yp, float radius, int *texture)
-{
-    float r2 = radius*radius;
-    vec2 pos = vec2(xp,yp);
-    vec2 st = max(floor(pos - radius), vec2(0.f));
-    vec2 en = min(floor(pos + radius + 1.f), vec2((float)(WindowWidth-1),(float)(WindowHeight-1)));
-    int bs = WindowWidth * st.y;
-    for (int y=st.y;y<en.y;y++) {
-        for (int x=st.x;x<en.x;x++) {
-            vec3 pp = vec3(vec2((float)x,(float)y) - pos, 0.f);
-            float d = magnitude(vec2(pp.x,pp.y));
-            if (d>r2) {
-                pp.z = sqrt(r2 - d);
-                //ScreenBuffer[x+bs] =
-            }
-        }
-        bs += WindowWidth;
-    }
 }
 
 int main()
