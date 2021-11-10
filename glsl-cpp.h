@@ -27,6 +27,8 @@
 namespace glsl {
 
   struct ivec2;
+  struct ivec3;
+  struct ivec4;
   struct vec2;
   struct vec3;
   struct vec4;
@@ -117,26 +119,13 @@ namespace glsl {
     //GLSL_INLINE vec2(_vec4 a) { x = a.x; y = a.y; }
 
     GLSL_INLINE const vec2 operator+(const float& a) const { return vec2(x + a, y + a); }
-    GLSL_INLINE const vec2 operator-(const float& a) const { return vec2(x - a, y - a); }
-    GLSL_INLINE const vec2 operator*(const float& a) const { return vec2(x * a, y * a); }
-    GLSL_INLINE const vec2 operator/(const float& a) const { float r = 1. / a; return vec2(x * r, y * r); }
     GLSL_INLINE const vec2 operator+(const vec2& a) const { return vec2(x + a.x, y + a.y); }
-    GLSL_INLINE const vec2 operator-(const vec2& a) const { return vec2(x - a.x, y - a.y); }
-    GLSL_INLINE const vec2 operator*(const vec2& a) const { return vec2(x * a.x, y * a.y); }
-    GLSL_INLINE const vec2 operator/(const vec2& a) const { return vec2(x / a.x, y / a.y); }
-
-    GLSL_INLINE vec2 operator+=(const float& a) { x += a; y += a; return *this; }
-    GLSL_INLINE vec2 operator-=(const float& a) { x -= a; y -= a; return *this; }
-    GLSL_INLINE vec2 operator*=(const float& a) { x *= a; y *= a; return *this; }
-    GLSL_INLINE vec2 operator/=(const float& a) { float r = 1. / a; x *= r; y *= r;return *this; }
     GLSL_INLINE vec2 operator+=(const vec2& a) { x += a.x; y += a.y; return *this; }
-    GLSL_INLINE vec2 operator-=(const vec2& a) { x -= a.x; y -= a.y; return *this; }
-    GLSL_INLINE vec2 operator*=(const vec2& a) { x *= a.x; y *= a.y; return *this; }
-    GLSL_INLINE vec2 operator/=(const vec2& a) { x /= a.x; y /= a.y; return *this; }
-
-    //GLSL_INLINE vec3 operator=(const dvec3& a) { x = a.x; y = a.y; z = a.z; return *this; }
-    GLSL_INLINE bool operator==(const vec2& a) { return (x == a.x && y == a.y); }
-    GLSL_INLINE bool operator!=(const vec2& a) { return (x != a.x || y != a.y); }
+    GLSL_INLINE const vec2 operator-() const { return vec2(-x, -y); }
+    GLSL_INLINE const vec2 operator-(const vec2& a) const { return vec2(x - a.x, y - a.y); }
+    GLSL_INLINE const vec2 operator*(const float& a) const { return vec2(x * a, y * a); }
+    GLSL_INLINE const vec2 operator*(const vec2& a) const { return vec2(x * a.x, y * a.y); }
+    GLSL_INLINE const vec2 operator/(const float& a) const { float _a = 1.0f / a; return vec2(x * _a, y * _a); }
   };
 
   struct dvec2 {
@@ -157,29 +146,6 @@ namespace glsl {
     template<typename T>
     GLSL_INLINE dvec2(T a, T b) { x = (double)a; y = (double)b; }
     GLSL_INLINE dvec2(double a) { x = a; y = a; }
-
-    GLSL_INLINE const dvec2 operator-(const float& a) const { return dvec2(x - a, y - a); }
-    GLSL_INLINE const dvec2 operator+(const double& a) const { return dvec2(x + a, y + a); }
-    GLSL_INLINE const dvec2 operator-(const double& a) const { return dvec2(x - a, y - a); }
-    GLSL_INLINE const dvec2 operator*(const double& a) const { return dvec2(x * a, y * a); }
-    GLSL_INLINE const dvec2 operator/(const double& a) const { double r = 1. / a; return dvec2(x * r, y * r); }
-    GLSL_INLINE const dvec2 operator+(const dvec2& a) const { return dvec2(x + a.x, y + a.y); }
-    GLSL_INLINE const dvec2 operator-(const dvec2& a) const { return dvec2(x - a.x, y - a.y); }
-    GLSL_INLINE const dvec2 operator*(const dvec2& a) const { return dvec2(x * a.x, y * a.y); }
-    GLSL_INLINE const dvec2 operator/(const dvec2& a) const { return dvec2(x / a.x, y / a.y); }
-
-    GLSL_INLINE dvec2 operator+=(const double& a) { x += a; y += a; return *this; }
-    GLSL_INLINE dvec2 operator-=(const double& a) { x -= a; y -= a; return *this; }
-    GLSL_INLINE dvec2 operator*=(const double& a) { x *= a; y *= a; return *this; }
-    GLSL_INLINE dvec2 operator/=(const double& a) { double r = 1. / a; x *= r; y *= r; return *this; }
-    GLSL_INLINE dvec2 operator+=(const dvec2& a) { x += a.x; y += a.y; return *this; }
-    GLSL_INLINE dvec2 operator-=(const dvec2& a) { x -= a.x; y -= a.y; return *this; }
-    GLSL_INLINE dvec2 operator*=(const dvec2& a) { x *= a.x; y *= a.y; return *this; }
-    GLSL_INLINE dvec2 operator/=(const dvec2& a) { x /= a.x; y /= a.y; return *this; }
-
-    GLSL_INLINE dvec2 operator=(const vec2& a) { x = a.x; y = a.y; return *this; }
-    GLSL_INLINE bool operator==(const dvec2& a) { return (x == a.x && y == a.y); }
-    GLSL_INLINE bool operator!=(const dvec2& a) { return (x != a.x || y != a.y); }
   };
 
   struct vec3 {
@@ -208,29 +174,14 @@ namespace glsl {
     GLSL_INLINE vec3(T a, T b, T c) { x = (float)a; y = (float)b; z = (float)c; }
     GLSL_INLINE vec3(float a) { x = a; y = a; z = a; }
     GLSL_INLINE vec3(vec2 a, float b) { x = a.x; y = a.y; z = b; }
-    GLSL_INLINE vec3(float a, vec2 b) { x = a; y = b.x; z = b.y; }
 
     GLSL_INLINE const vec3 operator+(const float& a) const { return vec3(x + a, y + a, z + a); }
-    GLSL_INLINE const vec3 operator-(const float& a) const { return vec3(x - a, y - a, z - a); }
-    GLSL_INLINE const vec3 operator*(const float& a) const { return vec3(x * a, y * a, z * a); }
-    GLSL_INLINE const vec3 operator/(const float& a) const { float r = 1. / a; return vec3(x * r, y * r, z * r); }
     GLSL_INLINE const vec3 operator+(const vec3& a) const { return vec3(x + a.x, y + a.y, z + a.z); }
-    GLSL_INLINE const vec3 operator-(const vec3& a) const { return vec3(x - a.x, y - a.y, z - a.z); }
-    GLSL_INLINE const vec3 operator*(const vec3& a) const { return vec3(x * a.x, y * a.y, z * a.z); }
-    GLSL_INLINE const vec3 operator/(const vec3& a) const { return vec3(x / a.x, y / a.y, z / a.z); }
-
-    GLSL_INLINE vec3 operator+=(const float& a) { x += a; y += a; z += a; return *this; }
-    GLSL_INLINE vec3 operator-=(const float& a) { x -= a; y -= a; z -= a; return *this; }
-    GLSL_INLINE vec3 operator*=(const float& a) { x *= a; y *= a; z *= a; return *this; }
-    GLSL_INLINE vec3 operator/=(const float& a) { float r = 1. / a; x *= r; y *= r; z *= r; return *this; }
     GLSL_INLINE vec3 operator+=(const vec3& a) { x += a.x; y += a.y; z += a.z; return *this; }
-    GLSL_INLINE vec3 operator-=(const vec3& a) { x -= a.x; y -= a.y; z -= a.z; return *this; }
-    GLSL_INLINE vec3 operator*=(const vec3& a) { x *= a.x; y *= a.y; z *= a.z; return *this; }
-    GLSL_INLINE vec3 operator/=(const vec3& a) { x /= a.x; y /= a.y; z /= a.z; return *this; }
-
-    //GLSL_INLINE vec3 operator=(const dvec3& a) { x = a.x; y = a.y; z = a.z; return *this; }
-    GLSL_INLINE bool operator==(const vec3& a) { return (x == a.x && y == a.y && z == a.z); }
-    GLSL_INLINE bool operator!=(const vec3& a) { return (x != a.x || y != a.y || z != a.z); }
+    GLSL_INLINE const vec3 operator-(const vec3& a) const { return vec3(x - a.x, y - a.y, z - a.z); }
+    GLSL_INLINE const vec3 operator*(const float& a) const { return vec3(x * a, y * a, z * a); }
+    GLSL_INLINE const vec3 operator*(const vec3& a) const { return vec3(x * a.x, y * a.y, z * a.z); }
+    GLSL_INLINE const vec3 operator/(const float& a) const { float _a = 1.0f / a; return vec3(x * _a, y * _a, z * _a); }
   };
 
   struct dvec3 {
@@ -258,31 +209,14 @@ namespace glsl {
     template<typename T>
     GLSL_INLINE dvec3(T a, T b, T c) { x = (double)a; y = (double)b; z = (double)c; }
     GLSL_INLINE dvec3(double a) { x = a; y = a; z = a; }
-    GLSL_INLINE dvec3(dvec2 a, double b) { x = a.x; y = a.y; z = b; }
-    GLSL_INLINE dvec3(double a, dvec2 b) { x = a; y = b.x; z = b.y; }
 
-    GLSL_INLINE const dvec3 operator-(const float& a) const { return dvec3(x - a, y - a, z - a); }
     GLSL_INLINE const dvec3 operator+(const double& a) const { return dvec3(x + a, y + a, z + a); }
-    GLSL_INLINE const dvec3 operator-(const double& a) const { return dvec3(x - a, y - a, z - a); }
-    GLSL_INLINE const dvec3 operator*(const double& a) const { return dvec3(x * a, y * a, z * a); }
-    GLSL_INLINE const dvec3 operator/(const double& a) const { double r = 1. / a; return dvec3(x * r, y * r, z * r); }
     GLSL_INLINE const dvec3 operator+(const dvec3& a) const { return dvec3(x + a.x, y + a.y, z + a.z); }
-    GLSL_INLINE const dvec3 operator-(const dvec3& a) const { return dvec3(x - a.x, y - a.y, z - a.z); }
-    GLSL_INLINE const dvec3 operator*(const dvec3& a) const { return dvec3(x * a.x, y * a.y, z * a.z); }
-    GLSL_INLINE const dvec3 operator/(const dvec3& a) const { return dvec3(x / a.x, y / a.y, z / a.z); }
-
-    GLSL_INLINE dvec3 operator+=(const double& a) { x += a; y += a; z += a; return *this; }
-    GLSL_INLINE dvec3 operator-=(const double& a) { x -= a; y -= a; z -= a; return *this; }
-    GLSL_INLINE dvec3 operator*=(const double& a) { x *= a; y *= a; z *= a; return *this; }
-    GLSL_INLINE dvec3 operator/=(const double& a) { double r = 1. / a; x *= r; y *= r; z *= r; return *this; }
     GLSL_INLINE dvec3 operator+=(const dvec3& a) { x += a.x; y += a.y; z += a.z; return *this; }
-    GLSL_INLINE dvec3 operator-=(const dvec3& a) { x -= a.x; y -= a.y; z -= a.z; return *this; }
-    GLSL_INLINE dvec3 operator*=(const dvec3& a) { x *= a.x; y *= a.y; z *= a.z; return *this; }
-    GLSL_INLINE dvec3 operator/=(const dvec3& a) { x /= a.x; y /= a.y; z /= a.z; return *this; }
-
-    GLSL_INLINE dvec3 operator=(const vec3& a) { x = a.x; y = a.y; z = a.z; return *this; }
-    GLSL_INLINE bool operator==(const dvec3& a) { return (x == a.x && y == a.y && z == a.z); }
-    GLSL_INLINE bool operator!=(const dvec3& a) { return (x != a.x || y != a.y || z != a.z); }
+    GLSL_INLINE const dvec3 operator-(const dvec3& a) const { return dvec3(x - a.x, y - a.y, z - a.z); }
+    GLSL_INLINE const dvec3 operator*(const double& a) const { return dvec3(x * a, y * a, z * a); }
+    GLSL_INLINE const dvec3 operator*(const dvec3& a) const { return dvec3(x * a.x, y * a.y, z * a.z); }
+    GLSL_INLINE const dvec3 operator/(const double& a) const { float _a = 1.0f / a; return dvec3(x * _a, y * _a, z * _a); }
   };
 
   struct vec4 {
@@ -322,25 +256,12 @@ namespace glsl {
     GLSL_INLINE vec4(vec3 a, float b) { x = a.x; y = a.y; z = a.z; w = b; }
 
     GLSL_INLINE const vec4 operator+(const float& a) const { return vec4(x + a, y + a, z + a, w + a); }
-    GLSL_INLINE const vec4 operator-(const float& a) const { return vec4(x - a, y - a, z - a, w - a); }
-    GLSL_INLINE const vec4 operator*(const float& a) const { return vec4(x * a, y * a, z * a, w * a); }
-    GLSL_INLINE const vec4 operator/(const float& a) const { float _a = 1.0f / a; return vec4(x * _a, y * _a, z * _a, w * _a); }
     GLSL_INLINE const vec4 operator+(const vec4& a) const { return vec4(x + a.x, y + a.y, z + a.z, w + a.w); }
-    GLSL_INLINE const vec4 operator-(const vec4& a) const { return vec4(x - a.x, y - a.y, z - a.z, w - a.w); }
-    GLSL_INLINE const vec4 operator*(const vec4& a) const { return vec4(x * a.x, y * a.y, z * a.z, w * a.w); }
-    GLSL_INLINE const vec4 operator/(const vec4& a) const { return vec4(x / a.x, y / a.y, z / a.z, w / a.w); }
-
-    GLSL_INLINE vec4 operator+=(const float& a) { x += a; y += a; z += a; w += a; return *this; }
-    GLSL_INLINE vec4 operator-=(const float& a) { x -= a; y -= a; z -= a; w -= a; return *this; }
-    GLSL_INLINE vec4 operator*=(const float& a) { x *= a; y *= a; z *= a; w *= a; return *this; }
-    GLSL_INLINE vec4 operator/=(const float& a) { x /= a; y /= a; z /= a; w /= a; return *this; }
     GLSL_INLINE vec4 operator+=(const vec4& a) { x += a.x; y += a.y; z += a.z; w += a.w; return *this; }
-    GLSL_INLINE vec4 operator-=(const vec4& a) { x -= a.x; y -= a.y; z -= a.z; w -= a.w; return *this; }
-    GLSL_INLINE vec4 operator*=(const vec4& a) { x *= a.x; y *= a.y; z *= a.z; w *= a.w; return *this; }
-    GLSL_INLINE vec4 operator/=(const vec4& a) { x /= a.x; y /= a.y; z /= a.z; w /= a.w; return *this; }
-
-    GLSL_INLINE bool operator==(const vec4& a) { return (x == a.x && y == a.y && z == a.z && w == a.w); }
-    GLSL_INLINE bool operator!=(const vec4& a) { return (x != a.x || y != a.y || z != a.z || w != a.w); }
+    GLSL_INLINE const vec4 operator-(const vec4& a) const { return vec4(x - a.x, y - a.y, z - a.z, w - a.w); }
+    GLSL_INLINE const vec4 operator*(const float& a) const { return vec4(x * a, y * a, z * a, w * a); }
+    GLSL_INLINE const vec4 operator*(const vec4& a) const { return vec4(x * a.x, y * a.y, z * a.z, w * a.w); }
+    GLSL_INLINE const vec4 operator/(const float& a) const { float _a = 1.0f / a; return vec4(x * _a, y * _a, z * _a, w * _a); }
   };
 
   struct dvec4 {
@@ -374,39 +295,14 @@ namespace glsl {
     dvec4() {}
     template<typename T>
     GLSL_INLINE dvec4(T a, T b, T c, T d) { x = (double)a; y = (float)b; z = (double)c; w = (double)d; }
-    GLSL_INLINE dvec4(double a) { x = a; y = a; z = a; w = a; }
-
-    GLSL_INLINE const dvec4 operator+(const double& a) const { return dvec4(x + a, y + a, z + a, w + a); }
-    GLSL_INLINE const dvec4 operator-(const double& a) const { return dvec4(x - a, y - a, z - a, w - a); }
-    GLSL_INLINE const dvec4 operator*(const double& a) const { return dvec4(x * a, y * a, z * a, w * a); }
-    GLSL_INLINE const dvec4 operator/(const double& a) const { double _a = 1.0f / a; return dvec4(x * _a, y * _a, z * _a, w * _a); }
-    GLSL_INLINE const dvec4 operator+(const dvec4& a) const { return dvec4(x + a.x, y + a.y, z + a.z, w + a.w); }
-    GLSL_INLINE const dvec4 operator-(const dvec4& a) const { return dvec4(x - a.x, y - a.y, z - a.z, w - a.w); }
-    GLSL_INLINE const dvec4 operator*(const dvec4& a) const { return dvec4(x * a.x, y * a.y, z * a.z, w * a.w); }
-    GLSL_INLINE const dvec4 operator/(const dvec4& a) const { return dvec4(x / a.x, y / a.y, z / a.z, w / a.w); }
-
-    GLSL_INLINE dvec4 operator+=(const double& a) { x += a; y += a; z += a; w += a; return *this; }
-    GLSL_INLINE dvec4 operator-=(const double& a) { x -= a; y -= a; z -= a; w -= a; return *this; }
-    GLSL_INLINE dvec4 operator*=(const double& a) { x *= a; y *= a; z *= a; w *= a; return *this; }
-    GLSL_INLINE dvec4 operator/=(const double& a) { x /= a; y /= a; z /= a; w /= a; return *this; }
-    GLSL_INLINE dvec4 operator+=(const dvec4& a) { x += a.x; y += a.y; z += a.z; w += a.w; return *this; }
-    GLSL_INLINE dvec4 operator-=(const dvec4& a) { x -= a.x; y -= a.y; z -= a.z; w -= a.w; return *this; }
-    GLSL_INLINE dvec4 operator*=(const dvec4& a) { x *= a.x; y *= a.y; z *= a.z; w *= a.w; return *this; }
-    GLSL_INLINE dvec4 operator/=(const dvec4& a) { x /= a.x; y /= a.y; z /= a.z; w /= a.w; return *this; }
-
-    GLSL_INLINE bool operator==(const dvec4& a) { return (x == a.x && y == a.y && z == a.z && w == a.w); }
-    GLSL_INLINE bool operator!=(const dvec4& a) { return (x != a.x || y != a.y || z != a.z || w != a.w); }
+    template<typename T>
+    GLSL_INLINE dvec4(T a) { x = (double)a; y = (double)a; z = (double)a; w = (double)a; }
   };
 
   GLSL_INLINE vec2 operator+(const float& a, const vec2& b) { return vec2(a + b.x, a + b.y); }
   GLSL_INLINE vec2 operator-(const float& a, const vec2& b) { return vec2(a - b.x, a - b.y); }
   GLSL_INLINE vec2 operator*(const float& a, const vec2& b) { return vec2(a * b.x, a * b.y); }
   GLSL_INLINE vec2 operator/(const float& a, const vec2& b) { return vec2(a / b.x, a / b.y); }
-
-  GLSL_INLINE dvec2 operator+(const double& a, const dvec2& b) { return dvec2(a + b.x, a + b.y); }
-  GLSL_INLINE dvec2 operator-(const double& a, const dvec2& b) { return dvec2(a - b.x, a - b.y); }
-  GLSL_INLINE dvec2 operator*(const double& a, const dvec2& b) { return dvec2(a * b.x, a * b.y); }
-  GLSL_INLINE dvec2 operator/(const double& a, const dvec2& b) { return dvec2(a / b.x, a / b.y); }
 
   GLSL_INLINE vec3 operator+(const float& a, const vec3& b) { return vec3(a + b.x, a + b.y, a + b.z); }
   GLSL_INLINE vec3 operator-(const float& a, const vec3& b) { return vec3(a - b.x, a - b.y, a - b.z); }
@@ -422,11 +318,6 @@ namespace glsl {
   GLSL_INLINE vec4 operator-(const float& a, const vec4& b) { return vec4(a - b.x, a - b.y, a - b.z, a - b.w); }
   GLSL_INLINE vec4 operator*(const float& a, const vec4& b) { return vec4(a * b.x, a * b.y, a * b.z, a * b.w); }
   GLSL_INLINE vec4 operator/(const float& a, const vec4& b) { return vec4(a / b.x, a / b.y, a / b.z, a / b.w); }
-
-  GLSL_INLINE dvec4 operator+(const double& a, const dvec4& b) { return dvec4(a + b.x, a + b.y, a + b.z, a + b.w); }
-  GLSL_INLINE dvec4 operator-(const double& a, const dvec4& b) { return dvec4(a - b.x, a - b.y, a - b.z, a - b.w); }
-  GLSL_INLINE dvec4 operator*(const double& a, const dvec4& b) { return dvec4(a * b.x, a * b.y, a * b.z, a * b.w); }
-  GLSL_INLINE dvec4 operator/(const double& a, const dvec4& b) { return dvec4(a / b.x, a / b.y, a / b.z, a / b.w); }
 
 	GLSL_INLINE float sqrt(float a);
 	GLSL_INLINE double sqrt(double a);
@@ -507,29 +398,14 @@ namespace glsl {
   GLSL_INLINE double magnitude(dvec3 a) { return a.x * a.x + a.y * a.y + a.z * a.z; }
   GLSL_INLINE double magnitude(dvec4 a) { return a.x * a.x + a.y * a.y + a.z * a.z + a.w * a.w; }
 
-  GLSL_INLINE vec2 reflect(vec2 a, vec2 b) { return a - 2.f * dot(b, a) * b; }
-  GLSL_INLINE vec3 reflect(vec3 a, vec3 b) { return a - 2.f * dot(b, a) * b; }
-  GLSL_INLINE vec4 reflect(vec4 a, vec4 b) { return a - 2.f * dot(b, a) * b; }
-
-  GLSL_INLINE dvec2 reflect(dvec2 a, dvec2 b) { return a - 2.0 * dot(b, a) * b; }
-  GLSL_INLINE dvec3 reflect(dvec3 a, dvec3 b) { return a - 2.0 * dot(b, a) * b; }
-  GLSL_INLINE dvec4 reflect(dvec4 a, dvec4 b) { return a - 2.0 * dot(b, a) * b; }
-
   GLSL_INLINE float length(vec2 a) { return sqrt(magnitude(a)); }
   GLSL_INLINE float length(vec3 a) { return sqrt(magnitude(a)); }
-  GLSL_INLINE float length(vec4 a) { return sqrt(magnitude(a)); }
 
   GLSL_INLINE double length(dvec2 a) { return sqrt(magnitude(a)); }
   GLSL_INLINE double length(dvec3 a) { return sqrt(magnitude(a)); }
-  GLSL_INLINE double length(dvec4 a) { return sqrt(magnitude(a)); }
 
-  GLSL_INLINE vec2 normalize(vec2 a) { return a * (1.f / length(a)); }
   GLSL_INLINE vec3 normalize(vec3 a) { return a * (1.f / length(a)); }
-  GLSL_INLINE vec4 normalize(vec4 a) { return a * (1.f / length(a)); }
-
-  GLSL_INLINE dvec2 normalize(dvec2 a) { return a * (1.0 / length(a)); }
   GLSL_INLINE dvec3 normalize(dvec3 a) { return a * (1.0 / length(a)); }
-  GLSL_INLINE dvec4 normalize(dvec4 a) { return a * (1.0 / length(a)); }
 
   GLSL_INLINE vec3 cross(vec3 a, vec3 b) { return vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
   GLSL_INLINE dvec3 cross(dvec3 a, dvec3 b) { return dvec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
@@ -610,18 +486,18 @@ namespace glsl {
 		return (long long)((rd.varIEE.mant | 0x0010000000000000) >> clamp(val0,-63,63))*(1 - (((int)rd.varIEE.sign)<<1)) - (long long)rd.varIEE.sign;
 	}
 
-	const float fastsindividef[]={0.5f, 1.0f/6.0f,1.0f/24.0f, 1.0f/120.0f,1.0f/720.0f, 1.0f/5040.0f, 1.0f/40320.0f,
-			1.0f/362880.0f, 1.0f/3628800.0f, 1.0f/3.99168E7f, 1.0f/4.790016E8f, 1.0f/6.2270208E9f, 1.0f/8.717828912E10f, 1.0f/1.307674368E12f,
+	const float fastsindividef[]={0.5f,1.0f/6.0f,1.0f/24.0f,1.0f/120.0f,1.0f/720.0f,1.0f/5040.0f,1.0f/40320.0f,
+			1.0f/362880.0f,1.0f/3628800.0f,1.0f/3.99168E7f,1.0f/4.790016E8f,1.0f/6.2270208E9f,1.0f/8.717828912E10f,1.0f/1.307674368E12f,
 			(float)4.7794773323873852974382074911175e-14,(float)2.8114572543455207631989455830103e-15,0,0,0,0};
 
 	GLSL_INLINE float sin(float _a)
 	{
-		float a = (fract(_a*GLSL_IPI_2F + 0.5f)-0.5f) *GLSL_PI_2F;
-		float b=a;
-		a *= a;
+		_a = (fract(_a*GLSL_IPI_2F + 0.5f)-0.5f) *GLSL_PI_2F;
+		float b=_a;
 		float _s=b;
 		for (int i=0;i<MAX_SINE_ITER;i++) {
-			b=(float)((-1.f) * b * a);
+			b=(float)((-1.0)*b*_a);
+			b*=_a;
 			_s+=(float)(b*fastsindividef[(i<<1)+1]);
 		}
 		return _s;
@@ -629,25 +505,25 @@ namespace glsl {
 
 	GLSL_INLINE float cos(float _a)
 	{
-		float a = (fract(_a * GLSL_IPI_2F + 0.5f)-0.5f) * GLSL_PI_2F;
-		a *= a;
-		float b = 1.f;
-		float _c = b;
-		for (int i=0; i<MAX_SINE_ITER; i++) {
-			b=(float)((-1.f) * b * a);
+		_a = (fract(_a*GLSL_IPI_2F + 0.5f)-0.5f) *GLSL_PI_2F;
+		float b=_a;
+		float _c=1.0f;
+		for (int i=0;i<MAX_SINE_ITER;i++) {
+			b=(float)((-1.0)*b*_a);
 			_c+=(float)(b*fastsindividef[(i<<1)]);
+			b*=_a;
 		}
 		return _c;
 	}
 
 	GLSL_INLINE double sin(double _a)
 	{
-		double a = (fract(_a*GLSL_IPI_2D + 0.5)-0.5) *GLSL_PI_2D;
-		double b = a;
-		a *= a;
+		_a = (fract(_a*GLSL_IPI_2D + 0.5)-0.5) *GLSL_PI_2D;
+		double b=_a;
 		double _s=b;
 		for (int i=0;i<MAX_SINE_ITER;i++) {
-			b=(double)((-1.0)*b * a);
+			b=(double)((-1.0)*b*_a);
+			b*=_a;
 			_s+=(double)(b*fastsindividef[(i<<1)+1]);
 		}
 		return _s;
@@ -655,13 +531,13 @@ namespace glsl {
 
 	GLSL_INLINE double cos(double _a)
 	{
-		double a = (fract(_a*GLSL_IPI_2D + 0.5)-0.5) *GLSL_PI_2D;
-		a *= a;
-		double b = a;
+		_a = (fract(_a*GLSL_IPI_2D + 0.5)-0.5) *GLSL_PI_2D;
+		double b=_a;
 		double _c=1.0f;
 		for (int i=0;i<MAX_SINE_ITER;i++) {
-			b=(double)((-1.0) * b * a);
-			_c+=(double)(b * fastsindividef[(i<<1)]);
+			b=(double)((-1.0)*b*_a);
+			_c+=(double)(b*fastsindividef[(i<<1)]);
+			b*=_a;
 		}
 		return _c;
 	}
