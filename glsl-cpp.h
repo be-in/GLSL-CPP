@@ -49,10 +49,10 @@ namespace glsl {
 		float w;
   };*/
 
-  /*template<typename Field, typename Vals, int ind0, int ind1>
+  template<typename Field, typename Vals, int ind0, int ind1>
   class glsl_field2 {
   public:
-    GLSL_INLINE Field () { Field r; ((Vals*)&r)[0] = ((Vals*)this)[ind0]; ((Vals*)&r)[1] = ((Vals*)this)[ind1]; return r; }
+    //GLSL_INLINE Field () { Field r; ((Vals*)&r)[0] = ((Vals*)this)[ind0]; ((Vals*)&r)[1] = ((Vals*)this)[ind1]; return r; }
     GLSL_INLINE Field operator () () { Field r; ((Vals*)&r)[0] = ((Vals*)this)[ind0]; ((Vals*)&r)[1] = ((Vals*)this)[ind1]; return r; }
     GLSL_INLINE void operator = (Field value) { ((Vals*)this)[ind0] = ((Vals*)&value)[0]; ((Vals*)this)[ind1] = ((Vals*)&value)[1]; }
   };
@@ -60,7 +60,7 @@ namespace glsl {
   template<typename Field, typename Vals, int ind0, int ind1, int ind2>
   class glsl_field3 {
   public:
-    GLSL_INLINE operator Field () { Field r; ((Vals*)&r)[0] = (Vals*)this[ind0]; ((Vals*)&r)[1] = (Vals*)this[ind1]; ((Vals*)&r)[2] = (Vals*)this[ind2]; return r; }
+    //GLSL_INLINE operator Field () { Field r; ((Vals*)&r)[0] = (Vals*)this[ind0]; ((Vals*)&r)[1] = (Vals*)this[ind1]; ((Vals*)&r)[2] = (Vals*)this[ind2]; return r; }
     GLSL_INLINE Field operator () () { Field r; ((Vals*)&r)[0] = ((Vals*)this)[ind0]; ((Vals*)&r)[1] = ((Vals*)this)[ind1]; ((Vals*)&r)[2] = ((Vals*)this)[ind2]; return r; }
     GLSL_INLINE void operator = (Field value) { (Vals*)this[ind0] = ((Vals*)&value)[0]; (Vals*)this[ind1] = ((Vals*)&value)[1]; (Vals*)this[ind2] = ((Vals*)&value)[2]; }
   };
@@ -68,10 +68,22 @@ namespace glsl {
   template<typename Field, typename Vals, int ind0, int ind1, int ind2, int ind3>
   class glsl_field4 {
   public:
-    GLSL_INLINE operator Field () { Field r; ((Vals*)&r)[0] = (Vals*)this[ind0]; ((Vals*)&r)[1] = (Vals*)this[ind1]; ((Vals*)&r)[2] = (Vals*)this[ind2]; ((Vals*)&r)[3] = (Vals*)this[ind3]; return r; }
+    //GLSL_INLINE operator Field () { Field r; ((Vals*)&r)[0] = (Vals*)this[ind0]; ((Vals*)&r)[1] = (Vals*)this[ind1]; ((Vals*)&r)[2] = (Vals*)this[ind2]; ((Vals*)&r)[3] = (Vals*)this[ind3]; return r; }
     GLSL_INLINE Field operator () () { Field r; ((Vals*)&r)[0] = ((Vals*)this)[ind0]; ((Vals*)&r)[1] = ((Vals*)this)[ind1]; ((Vals*)&r)[2] = ((Vals*)this)[ind2]; ((Vals*)&r)[3] = (Vals*)this[ind3]; return r; }
     GLSL_INLINE void operator = (Field value) { (Vals*)this[ind0] = ((Vals*)&value)[0]; (Vals*)this[ind1] = ((Vals*)&value)[1]; (Vals*)this[ind2] = ((Vals*)&value)[2]; (Vals*)this[ind3] = ((Vals*)&value)[3]; }
-  };*/
+  };
+
+#define VEC3_FIELDS2(a,b,c) glsl_field2<vec2, a, 0, b> x##c; glsl_field2<vec2, a, 1, b> y##c; glsl_field2<vec2, a, 2, b> z##c;
+#define VEC3_FIELDS3X(a,b,c) glsl_field3<vec3, a, 0, 0, b> xx##c; glsl_field3<vec3, a, 0, 1, b> xy##c; glsl_field3<vec3, a, 0, 2, b> xz##c;
+#define VEC3_FIELDS3Y(a,b,c) glsl_field3<vec3, a, 1, 0, b> yx##c; glsl_field3<vec3, a, 1, 1, b> yy##c; glsl_field3<vec3, a, 1, 2, b> yz##c;
+#define VEC3_FIELDS3Z(a,b,c) glsl_field3<vec3, a, 2, 0, b> zx##c; glsl_field3<vec3, a, 2, 1, b> zy##c; glsl_field3<vec3, a, 2, 2, b> zz##c;
+#define VEC3_FIELDS3(a,b,c) VEC3_FIELDS3X(a,b,c) VEC3_FIELDS3Y(a,b,c) VEC3_FIELDS3Z(a,b,c)
+#define VEC4_FIELDS2(a,b,c) glsl_field2<vec2, a, 0, b> x##c; glsl_field2<vec2, a, 1, b> y##c; glsl_field2<vec2, a, 2, b> z##c; glsl_field2<vec2, a, 3, b> w##c;
+#define VEC4_FIELDS3X(a,b,c) glsl_field3<vec3, a, 0, 0, b> xx##c; glsl_field3<vec3, a, 0, 1, b> xy##c; glsl_field3<vec3, a, 0, 2, b> xz##c; glsl_field3<vec3, a, 0, 3, b> xw##c;
+#define VEC4_FIELDS3Y(a,b,c) glsl_field3<vec3, a, 1, 0, b> yx##c; glsl_field3<vec3, a, 1, 1, b> yy##c; glsl_field3<vec3, a, 1, 2, b> yz##c; glsl_field3<vec3, a, 1, 3, b> yw##c;
+#define VEC4_FIELDS3Z(a,b,c) glsl_field3<vec3, a, 2, 0, b> zx##c; glsl_field3<vec3, a, 2, 1, b> zy##c; glsl_field3<vec3, a, 2, 2, b> zz##c; glsl_field3<vec3, a, 2, 3, b> zw##c;
+#define VEC4_FIELDS3W(a,b,c) glsl_field3<vec3, a, 3, 0, b> wx##c; glsl_field3<vec3, a, 3, 1, b> wy##c; glsl_field3<vec3, a, 3, 2, b> wz##c; glsl_field3<vec3, a, 3, 3, b> ww##c;
+#define VEC4_FIELDS3(a,b,c) VEC4_FIELDS3X(a,b,c) VEC4_FIELDS3Y(a,b,c) VEC4_FIELDS3Z(a,b,c) VEC4_FIELDS3W(a,b,c)
 
   struct ivec2 {
   public:
@@ -107,9 +119,10 @@ namespace glsl {
       float x;
       float r;
       float s;
-      //glsl_field2<vec2, float, 0, 0> xx;
-      //glsl_field2<vec2, float, 0, 1> xy;
-      //glsl_field4<_vec4, float, 0, 1, 0, 1> xyxy;
+      glsl_field2<vec2, float, 0, 0> xx;
+      glsl_field2<vec2, float, 0, 1> xy;
+      glsl_field2<vec2, float, 1, 1> yy;
+      glsl_field2<vec2, float, 1, 0> yx;
     };
     union {
       float y;
@@ -152,7 +165,10 @@ namespace glsl {
       double x;
       double r;
       double s;
-      //glsl_field4<dvec4, double, 0, 1, 0, 1> xyxy;
+      glsl_field2<vec2, double, 0, 0> xx;
+      glsl_field2<vec2, double, 0, 1> xy;
+      glsl_field2<vec2, double, 1, 1> yy;
+      glsl_field2<vec2, double, 1, 0> yx;
     };
     union {
       double y;
@@ -195,9 +211,12 @@ namespace glsl {
       float x;
       float r;
       float s;
-      //glsl_field2<vec2, float, 0, 1> xy;
-      //glsl_field2<vec2, float, 0, 2> xz;
-      //glsl_field2<vec2, float, 1, 2> yz;
+			VEC3_FIELDS2(float,0,x)
+			VEC3_FIELDS2(float,1,y)
+			VEC3_FIELDS2(float,2,z)
+			VEC3_FIELDS3(float,0,x)
+			VEC3_FIELDS3(float,1,y)
+			VEC3_FIELDS3(float,2,z)
     };
     union {
       float y;
@@ -246,9 +265,12 @@ namespace glsl {
       double x;
       double r;
       double s;
-      //glsl_field2<dvec2, double, 0, 1> xy;
-      //glsl_field2<dvec2, double, 0, 2> xz;
-      //glsl_field2<dvec2, double, 1, 2> yz;
+			VEC3_FIELDS2(double,0,x)
+			VEC3_FIELDS2(double,1,y)
+			VEC3_FIELDS2(double,2,z)
+			VEC3_FIELDS3(double,0,x)
+			VEC3_FIELDS3(double,1,y)
+			VEC3_FIELDS3(double,2,z)
     };
     union {
       double y;
@@ -298,11 +320,14 @@ namespace glsl {
       float x;
       float r;
       float s;
-      //glsl_field2<vec2, float, 0, 1> xy;
-      //glsl_field2<vec2, float, 0, 2> xz;
-      //glsl_field2<vec2, float, 1, 2> yz;
-      //glsl_field4<vec4, float, 0, 2, 0, 2> xzxz;
-      //glsl_field4<vec4, float, 1, 1, 3, 3> yyww;
+			VEC4_FIELDS2(float,0,x)
+			VEC4_FIELDS2(float,1,y)
+			VEC4_FIELDS2(float,2,z)
+			VEC4_FIELDS2(float,3,w)
+			VEC4_FIELDS3(float,0,x)
+			VEC4_FIELDS3(float,1,y)
+			VEC4_FIELDS3(float,2,z)
+			VEC4_FIELDS3(float,3,w)
     };
     union {
       float y;
@@ -356,11 +381,14 @@ namespace glsl {
       double x;
       double r;
       double s;
-      //glsl_field2<dvec2, double, 0, 1> xy;
-      //glsl_field2<dvec2, double, 0, 2> xz;
-      //glsl_field2<dvec2, double, 1, 2> yz;
-      //glsl_field4<dvec4, double, 0, 2, 0, 2> xzxz;
-      //glsl_field4<dvec4, double, 1, 1, 3, 3> yyww;
+			VEC4_FIELDS2(double,0,x)
+			VEC4_FIELDS2(double,1,y)
+			VEC4_FIELDS2(double,2,z)
+			VEC4_FIELDS2(double,3,w)
+			VEC4_FIELDS3(double,0,x)
+			VEC4_FIELDS3(double,1,y)
+			VEC4_FIELDS3(double,2,z)
+			VEC4_FIELDS3(double,3,w)
     };
     union {
       double y;
@@ -380,7 +408,7 @@ namespace glsl {
 
     dvec4() {}
     template<typename T>
-    GLSL_INLINE dvec4(T a, T b, T c, T d) { x = (double)a; y = (float)b; z = (double)c; w = (double)d; }
+    GLSL_INLINE dvec4(T a, T b, T c, T d) { x = (double)a; y = (double)b; z = (double)c; w = (double)d; }
     GLSL_INLINE dvec4(double a) { x = a; y = a; z = a; w = a; }
 
     GLSL_INLINE const dvec4 operator+(const double& a) const { return dvec4(x + a, y + a, z + a, w + a); }
